@@ -189,42 +189,78 @@ form.example::after {
 </div>
 
 <div class="navbar">
-  <a href="#" class="active">Home</a>
-  <a href="#">Repository</a>
-  <a href="#">Link</a>
-  <a href="#" class="right">Link</a>
+  <a href="index.php" class="active">Home</a>
 </div>
 
 <div class="main">
-    <div class="card">
-        <div class="card-body">Pengembangan User Interface dan User Experience Menggunakan Metode User Centered Design( Studi Kasus Aplikasi Portal Kota Bandung.go.id)</div>
-    </div>
+<?php
+	use BorderCloud\SPARQL\SparqlClient;
+	require_once('../vendor/autoload.php');
 
-    <div class="row">
-        <div class="column">
-            <p> <img src="customer.png" alt="profile" width="20" height="20"> Nizariansyah Agung</p>
-            <p> <img src="book.png" alt="profile" width="20" height="20">
-                Dalam mewujudkan kota Smart City, salah satu elemen pendukungnya adalah aplikasi yang digunakan sebagai solusi akan kompleksnya permasalahan kota. Aplikasi Portal Kota Bandung.go.id dijadikan identitas yang menyediakan pelayanan bagi masyarakat luas. Ada beberapa faktor kesuksesan sebuah aplikasi dalam melayani kebutuhan pengguna diantaranya adalah faktor user interface dan user experience. Penulis melakukan penelitian dalam membangun user interface dan user experience yang sesuai dengan kebutuhan pengguna. 
-                Penggunaan metode User Centered Design (UCD) menempatkan pengguna sebagai pusat referensi dilakukannya tahapan dalam proses melalakukan desain user interface dan user experience aplikasi. Dalam penerapan metode UCD, penulis akan melakukan pengambilan data dengan menggunakan dua metode, yaitu field observation dan digital survei untuk mendapatkan referensi utama yang dibutuhkan untuk penelitian ini. 
-                Usability testing berbentuk Heuristic Evaluation dengan indikator Severity Ratings digunakan untuk mengetahui keefektifan dari pengembangan user interface dan user experience. Dari hasil usability testing yang dilakukan nantinya akan dibandingkan antara hasil pengujian pada aplikasi lama Bandung.go.id dengan hasil pengujian pada desain aplikasi baru yang telah dibuat. Persentase indikator kelancaran serta keraguan dan kesulitan merupakan angka yang dijadikan sebagai penentu keberhasilan hasil desain user interface dan user experience yang sesuai dengan kebutuhan pengguna.
+  $id = $_GET['id'];
+
+  $fuseki_server = "http://localhost:3030"; // fuseki server address 
+	$fuseki_sparql_db = "ourrepoo"; // fuseki Sparql database 
+	$endpoint = $fuseki_server . "/" . $fuseki_sparql_db . "/query";	
+	$sc = new SparqlClient();
+	$sc->setEndpointRead($endpoint);
+	$q = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX owl: <http://www.w3.org/2002/07/owl#>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+        PREFIX : <http://www.semanticweb.org/user/ontologies/2021/4/untitled-ontology-4#>
+        SELECT ?Title_Name ?Name ?Major ?Abstract ?Year ?id
+        WHERE { 
+        ?Author rdf:type :Author . 
+        ?Author :Have ?Title .
+        ?Title rdf:type :Title .
+        ?Author :Name ?Name.
+        ?Author :Major ?Major.
+        ?Title :id '$id'^^xsd:integer .
+        ?Title :Title_Name ?Title_Name .
+        ?Title :Year ?Year .
+        ?Title :Abstract ?Abstract .
+        }
+      "; 
+							
+      $data = $sc->query($q, 'data');
+		  $row = $data['result']['rows'][0];
+			$err = $sc->getErrors();
+			if ($err) {
+				print_r($err);
+				throw new Exception(print_r($err, true));
+			}
+
+      $title_name = $row["Title_Name"];
+      $name = $row["Name"];
+      $year = $row["Year"];
+      $major = $row["Major"];
+      $abstract = $row["Abstract"];
+                            
+      echo"
+      <div class='card'>
+        <div class='card-body'>$title_name</div>
+      </div>
+
+      <div class='row'>
+        <div class='column'>
+            <p> <img src='customer.png' alt='profile' width='20' height='20'> $name</p>
+            <p> <img src='book.png' alt='profile' width='20' height='20'> $abstract
             </p>
         </div>
         
-        <div class="column2">
-            <div class="card">
-                <div class="card-body" style="font-size: 20px;">Download File Here</div>
-                <p style="font-size: 16px;"><a href="#">
-                    <img src="file.png" alt="profile" width="20" height="20">
+        <div class='column2'>
+            <div class='card'>
+                <div class='card-body' style='font-size: 20px;'>Download File Here</div>
+                <p style='font-size: 16px;'><a href='#'>
+                    <img src='file.png' alt='profile' width='20' height='20'>
                     Skripsi</a></p>
             </div>
         </div>
       </div>
-
-</div>
-
-<div class="footer">
-  <h4>Credits OurRepo</h4>
-  <p>Hana Meilina F - Sharashena Chairani
+			";
+			
+?>
 </div>
 
 </body>

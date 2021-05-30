@@ -151,154 +151,25 @@ form.example::after {
 </div>
 
 <div class="navbar">
-  <a href="#" class="active">Home</a>
-  <a href="#">Repository</a>
-  <a href="#">Link</a>
-  <a href="#" class="right">Link</a>
+  <a href="index.php" class="active">Home</a>
 </div>
 
 
   <div class="main" style="text-align: center;">
       <div class="text-center">
         <h2>FMIPA REPOSITORY</h2>
-        <form class="example" action="/action_page.php">
+        <form class="example" action="listskripsirepo.php" method="POST">
             <input type="text" placeholder="Cari Referensi Skripsi..." name="search">
             <button type="submit"><i class="fa fa-search"></i></button>
         </form>
       </div>
   </div>
 
-  <div class="content">
-    
-    <script type="text/javascript">
-        //<![CDATA[
-        $(function() { $('input[name=query]').focus(); });    //]]>
-    </script>
-    <div class="form-wrapper">
-        <form id="form-search" action="/solrsearch/dispatch" method="post">
-            <div id="fieldset-search" class="fieldset-wrapper">
-                <fieldset>
-                    <div id="edit-search-wrapper" class="form-item">
-                        <input type="text" size="30" name="query" id="edit-search" class="form-text" value="">
-                    </div>
-                    <div id="edit-submit-search-wrapper" class="form-item">
-                        <span class="form-submit-wrapper"><input type="submit" id="edit-submit-search" class="form-submit" value="Search"></span>
-                    </div>
-                </fieldset>
-                <p class="footer-link" style="text-align:center;">
-                    <a class="link" href="/solrsearch/index/advanced">Advanced Search</a>
-                                    | <a id="link-solrsearch-all-documents" class="link" href="/solrsearch/index/search/searchtype/all">All documents&nbsp;(<span id="solrsearch-totalnumofdocs">46.468</span>)</a>
-                    | <a class="link" href="/solrsearch/index/search/searchtype/latest">Latest documents</a>
-                </p>
-    
-                <input type="hidden" name="searchtype" id="searchtype" value="simple">
-                <input type="hidden" name="start" id="start" value="0">
-                <input type="hidden" name="sortfield" id="sortfield" value="score">
-                <input type="hidden" name="sordorder" id="sortorder" value="desc">
-            </div>
-        </form>
-    </div>
-    </div>
-
-    <!--Backend-->
-    <?php
-      use BorderCloud\SPARQL\SparqlClient;
-      require_once('../vendor/autoload.php');
-      
-      //Error Handling
-        $search = false;
-        $Title_Name = false;
-        $Major = false;
-        $Name = false;
-       
-      if(isset($_POST['search']))
-       $keywords=$_POST['search'];
-      if(isset($_POST['tahun']))
-       $tahun=$_POST['tahun'];
-
-            if(!$search && !$tahun){
-       echo"<h1>Data Kosong!</h1>";
-      }
-      //Error Handling
-      else{
-       $fuseki_server = "http://localhost:3030"; // fuseki server address 
-       $fuseki_sparql_db = "skripsi"; // fuseki Sparql database 
-       $endpoint = $fuseki_server . "/" . $fuseki_sparql_db . "/query"; 
-       $sc = new SparqlClient();
-       $sc->setEndpointRead($endpoint);
-       $q = PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-            PREFIX owl: <http://www.w3.org/2002/07/owl#>
-            PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-            PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-            PREFIX : <http://www.semanticweb.org/user/ontologies/2021/4/untitled-ontology-4#>
-       
-            SELECT ?Title_Name ?Name ?Major ?Abstract ?Year
-            WHERE { 
-            ?Author rdf:type :Author . 
-            ?Author :Name ?Name.
-            ?Author :Major ?Major.
-            ?Author :Have ?Title.
-            ?Title rdf:type :Title .
-                OPTIONAL {?Title :Title_Name ?Title_Name . }
-                OPTIONAL {?Title :Abstract ?Abstract . }
-                OPTIONAL {?Title :Year ?Year . }
-            FILTER (regex(?Title_Name, "", "i") || 
-                regex(?Major, "", "i") ||
-                regex(?Name, "", "i"))
-            }
-        "; 
-
-       $rows = $sc->query($q, 'rows');
-       $err = $sc->getErrors();
-       if ($err) {
-        print_r($err);
-        throw new Exception(print_r($err, true));
-       }
-       echo"
-        <h1>The Trend </h1>
-                <h2 id='jenis' hidden>$jenis</h2>
-        <h2 id='tahun' hidden>$tahun</h2>
-
-                <div class='semua'>
-                <div class='limiter'>
-                <div class='container-table10'>
-                <div class='wrap-table100'>
-                <div class='table100'>
-                <table>
-                <thead>
-                  <tr class='table100-head'>
-                    <th class='column1'>Year</th>
-                    <th class='column2'>Category</th>
-                    <th class='column3'>Style</th>
-                    <th class='column4'>Material</th>
-                    <th class='column5'>Color</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ";
-                  foreach ($rows["result"]["rows"] as $row) {
-                    echo"<tr>";
-                    foreach ($rows["result"]["variables"] as $variable) {
-                      echo "<td class='column1' >$row[$variable]</td>";
-                    }
-                    echo "</tr>";
-                  };
-                  echo"
-                  </tbody>
-                </table>
-                </div>
-                </div>
-                </div>
-                </div>
-                </div>";
-      }
-     ?>
-
-
 <div class="footer">
   <h4>Credits OurRepo</h4>
   <p>Hana Meilina F - Sharashena Chairani
 </div>
+
 
 </body>
 </html>

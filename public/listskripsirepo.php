@@ -21,14 +21,14 @@ body {
   background: rgba(0, 0, 0, 0.15);
   border-radius: 20px;
   margin: 20px;
-  padding: auto;
-  text-align: center;
+  padding: 20px;
+  text-align: left;
   font-family: arial;
 }
 
 th,td {
   color: black;
-  padding: 7px;
+  padding: 10px;
   text-align: left;
 }
 
@@ -40,13 +40,13 @@ button {
   border: none;
   outline: 0;
   display: inline-block;
-  padding: 8px;
+  padding: 10px;
   color: white;
-  background-color: #000;
+  background-color: white;
   text-align: center;
   cursor: pointer;
-  width: 100%;
-  font-size: 18px;
+  width: 80px;
+  font-size: 12px;
 }
 
 a {
@@ -181,6 +181,8 @@ form.example::after {
     width: 100%;
   }
 }
+
+
 </style>
 </head>
 <body>
@@ -190,106 +192,130 @@ form.example::after {
 </div>
 
 <div class="navbar">
-  <a href="#" class="active">Home</a>
-  <a href="#">Repository</a>
-  <a href="#">Link</a>
-  <a href="#" class="right">Link</a>
+  <a href="index.php" class="active">Home</a>
 </div>
 
   <div class="main" style="text-align: center;">
-      <div class="text-center">
-        <form class="example" action="/action_page.php">
+      <div class="text-left">
+        <form class="example" action="listskripsirepo.php" method="POST">
             <input type="text" placeholder="Cari Referensi Skripsi..." name="search">
             <button type="submit"><i class="fa fa-search"></i></button>
         </form>
       </div>
-      <div class="content">
-        <div class="card">
-            <table style="width:100%">
-                <tr>
-                  <th>Judul</th>
-                  <td>:</td>
-                  <td><a href="skripsi.html">Pengembangan User Interface dan User Experience Menggunakan Metode User Centered Design( Studi Kasus Aplikasi Portal Kota Bandung.go.id)</a></td>
-                </tr>
-                <tr>
-                  <th>Tahun</th>
-                  <td>:</td>
-                  <td>2019</td>
-                </tr>
-                <tr>
-                    <th>Milik</th>
-                    <td>:</td>
-                    <td>Nizariansyah Agung</td>
-                  </tr>
-              </table>
-          </div>
-          <div class="card">
-            <table style="width:100%">
-                <tr>
-                  <th>Judul</th>
-                  <td>:</td>
-                  <td><a href="skripsi.html">PENGEMBANGAN USER INTERFACE DAN USER EXPERIENCE PORTAL LABORATORIUM MENGGUNAKAN METODE GOALDIRECTED DESIGN (Studi Kasus Laboratorium Teknik Informatika Unpad)</a></td>
-                </tr>
-                <tr>
-                  <th>Tahun</th>
-                  <td>:</td>
-                  <td>2018</td>
-                </tr>
-                <tr>
-                    <th>Milik</th>
-                    <td>:</td>
-                    <td>Rifki Muhammad</td>
-                  </tr>
-              </table>
-          </div>
-          <div class="card">
-            <table style="width:100%">
-                <tr>
-                  <th>Judul</th>
-                  <td>:</td>
-                  <td><a href="skripsi.html">ANALISIS USER EXPERIENCE PADA APLIKASI AUGMENTED REALITY ALAT MUSIK TRADISIONAL JAWA BARAT DENGAN MENGGUNAKAN METODE PARTICIPATORY DESIGN</a></td>
-                </tr>
-                <tr>
-                  <th>Tahun</th>
-                  <td>:</td>
-                  <td>2018</td>
-                </tr>
-                <tr>
-                    <th>Milik</th>
-                    <td>:</td>
-                    <td>Aini Novianty</td>
-                  </tr>
-              </table>
-          </div>
-          <div class="card">
-            <table style="width:100%">
-                <tr>
-                  <th>Judul</th>
-                  <td>:</td>
-                  <td><a href="skripsi.html">Pengembangan User Interface dan User Experience Menggunakan Metode User Centered Design( Studi Kasus Aplikasi Portal Kota Bandung.go.id)</a></td>
-                </tr>
-                <tr>
-                  <th>Tahun</th>
-                  <td>:</td>
-                  <td>2019</td>
-                </tr>
-                <tr>
-                    <th>Milik</th>
-                    <td>:</td>
-                    <td>Nizariansyah Agung</td>
-                  </tr>
-              </table>
-          </div>
-      </div>
+
+      <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+<!--Backend-->
+<?php
+
+use BorderCloud\SPARQL\SparqlClient;
+
+require_once('../vendor/autoload.php');
+
+//Error Handling
+$search = false;
+$title_name = false;
+$name = false;
+$year = false;
+$major = false;
+$id = false;
+
+  echo "
+        <div class='content'>
+        ";
+if (isset($_POST['search']))
+    $search = $_POST['search'];
+
+if (!$search) {
+    echo "<div><h1>Masukkan Pencarian!</h1></div>";
+}
+//Error Handling
+else {
+    $fuseki_server = "http://localhost:3030"; // fuseki server address 
+    $fuseki_sparql_db = "ourrepoo"; // fuseki Sparql database 
+    $endpoint = $fuseki_server . "/" . $fuseki_sparql_db . "/query";
+    $sc = new SparqlClient();
+    $sc->setEndpointRead($endpoint);
+    $q = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX owl: <http://www.w3.org/2002/07/owl#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    PREFIX : <http://www.semanticweb.org/user/ontologies/2021/4/untitled-ontology-4#>
+
+    SELECT ?Title_Name ?Name ?Major ?Abstract ?Year ?id
+    WHERE { 
+    ?Author rdf:type :Author . 
+    ?Author :Name ?Name.
+    ?Author :Major ?Major.
+    ?Author :Have ?Title.
+    ?Title rdf:type :Title .
+        OPTIONAL {?Title :Title_Name ?Title_Name . }
+        OPTIONAL {?Title :Abstract ?Abstract . }
+        OPTIONAL {?Title :Year ?Year . }
+        OPTIONAL {?Title :id ?id . }
+    FILTER (regex(?Title_Name, '$search', 'i') || 
+        regex(?Major, '$search', 'i') ||
+        regex(?Year, '$search', 'i') ||
+        regex(?Name, '$search', 'i'))
+    }
+";
+    // proses ke query 
+    $rows = $sc->query($q, 'rows');
+    $err = $sc->getErrors();
+    if ($err) {
+        print_r($err);
+        throw new Exception(print_r($err, true));
+    }
+
+    echo "<div><h2>Hasil pencarian $search</h2></div>";
+
+    if(empty($rows["result"]["rows"])){
+       echo "<div><h2>Hasil tidak ditemukan</h2></div>";
+    }
+
+    foreach ($rows["result"]["rows"] as $row) {
+        $title_name = $row["Title_Name"];
+        $name = $row["Name"];
+        $year = $row["Year"];
+        $major = $row["Major"];
+        $id = $row["id"];
+
+        echo"
+        <div class='card' >
+          <table style='width:100%'>
+            <tr>
+              <th>Judul</th>
+              <td>:</td>
+              <td>$title_name</td>
+            </tr>
+            <tr>
+              <th>Tahun</th>
+              <td>:</td>
+              <td>$year</td>
+            </tr>
+            <tr>
+                <th>Milik</th>
+                <td>:</td>
+                <td>$name</td>
+              </tr>
+            <tr>
+              <th>Jurusan</th>
+              <td>:</td>
+              <td>$major</td>
+            </tr>
+          </table>
+
+          <button><a href='detailpage.php?id=$id'>Detail</a></button>
+        </div>";
+    }
+}
+?>
 
   </div>
 
 
-
-<div class="footer">
-  <h4>Credits OurRepo</h4>
-  <p>Hana Meilina F - Sharashena Chairani
-</div>
 
 </body>
 </html>
