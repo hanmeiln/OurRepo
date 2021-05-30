@@ -207,26 +207,21 @@ form.example::after {
       
       //Error Handling
         $search = false;
-        $Title_Name = false;
-        $Major = false;
-        $Name = false;
        
       if(isset($_POST['search']))
        $keywords=$_POST['search'];
-      if(isset($_POST['tahun']))
-       $tahun=$_POST['tahun'];
 
-            if(!$search && !$tahun){
+            if(!$search){
        echo"<h1>Data Kosong!</h1>";
       }
       //Error Handling
       else{
        $fuseki_server = "http://localhost:3030"; // fuseki server address 
-       $fuseki_sparql_db = "skripsi"; // fuseki Sparql database 
+       $fuseki_sparql_db = "ourrepo"; // fuseki Sparql database 
        $endpoint = $fuseki_server . "/" . $fuseki_sparql_db . "/query"; 
        $sc = new SparqlClient();
        $sc->setEndpointRead($endpoint);
-       $q = PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+       $q = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
             PREFIX owl: <http://www.w3.org/2002/07/owl#>
             PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
             PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
@@ -256,7 +251,7 @@ form.example::after {
        }
        echo"
         <h1>The Trend </h1>
-                <h2 id='jenis' hidden>$jenis</h2>
+        <h2 id='jenis' hidden>$jenis</h2>
         <h2 id='tahun' hidden>$tahun</h2>
 
                 <div class='semua'>
