@@ -112,6 +112,7 @@ form.example::after {
   flex: 70%;
   background-color: #FBEEC1;
   padding: 70px;
+  height:auto;
 }
 
 /* Fake image, just for this example */
