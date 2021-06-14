@@ -193,7 +193,7 @@
 
     <div class="navbar">
       <a href="index.php" class="">Home</a>
-      <a href="advance.php" class="">Advanced Search</a>
+      <a href="advancedsearch.php" class="">Advanced Search</a>
     </div>
 
     <div class="main" style="text-align: center;">

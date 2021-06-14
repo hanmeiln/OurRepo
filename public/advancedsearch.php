@@ -190,11 +190,11 @@
 
     <div class="navbar">
       <a href="index.php" class="">Home</a>
-      <a href="advance.php" class="active">Advanced Search</a>
+      <a href="advancedsearch.php" class="active">Advanced Search</a>
     </div>
 
     <div class="main">
-      <form action="advance.php" method="POST">    
+      <form action="advancedsearch.php" method="POST">    
         <div class="">
           <div class="">
             <div class="">
